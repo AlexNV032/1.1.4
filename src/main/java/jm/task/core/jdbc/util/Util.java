@@ -1,5 +1,10 @@
 package jm.task.core.jdbc.util;
 
+import jm.task.core.jdbc.model.User;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,6 +16,7 @@ public class Util {
     private final String PASSWORD = "root";
 
     private Connection connection;
+    private SessionFactory sessionFactory;
 
     public Connection getConnection() {
         try {
@@ -22,5 +28,29 @@ public class Util {
             throw new RuntimeException(e);
         }
         return connection;
+    }
+
+    public SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                Configuration configuration = new Configuration();
+                configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+                configuration.setProperty("hibernate.connection.url", URL);
+                configuration.setProperty("hibernate.connection.username", USERNAME);
+                configuration.setProperty("hibernate.connection.password", PASSWORD);
+                configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+                configuration.setProperty("hibernate.hbm2ddl.auto", "update");
+                configuration.setProperty("hibernate.show_sql", "true");
+                configuration.setProperty("hibernate.format_sql", "true");
+                configuration.addAnnotatedClass(User.class);
+
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties()).build();
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return sessionFactory;
     }
 }
