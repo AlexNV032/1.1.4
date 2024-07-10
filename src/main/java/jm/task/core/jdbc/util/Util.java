@@ -11,14 +11,18 @@ import java.sql.SQLException;
 
 public class Util {
     // реализуйте настройку соеденения с БД
-    private final String URL = "jdbc:mysql://localhost:3306/mydbtest";
-    private final String USERNAME = "alexnv";
-    private final String PASSWORD = "root";
+    private static final String URL = "jdbc:mysql://localhost:3306/mydbtest";
+    private final static String USERNAME = "alexnv";
+    private final static String PASSWORD = "root";
 
-    private Connection connection;
-    private SessionFactory sessionFactory;
+    private static Connection connection;
+    private static SessionFactory sessionFactory;
 
-    public Connection getConnection() {
+    private Util() {
+
+    }
+
+    public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -30,7 +34,7 @@ public class Util {
         return connection;
     }
 
-    public SessionFactory getSessionFactory() {
+    public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
